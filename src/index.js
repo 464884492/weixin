@@ -63,7 +63,7 @@ let wxUtils = {
     },
     getSignature(timestamp, ticket) {
         let url = window.location.href.replace(window.location.hash, "");
-        let jsapi_ticket = ticket + "&noncestr" + timestamp + "&timestamp" + timestamp + "&url" + url;
+        let jsapi_ticket = "jsapi_ticket="+ticket + "&noncestr" + timestamp + "&timestamp" + timestamp + "&url" + url;
         let sha1Str = sha1(jsapi_ticket);
         console.log(sha1Str);
         return sha1Str;
