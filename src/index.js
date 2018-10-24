@@ -96,11 +96,15 @@ let wxUtils = {
 
         });
     },
-    async scanCodeMore(times) {
-        for (let i = 0; i < times; i++) {
-            let scanInfo = await this.scanCode();
-            this.printStatuInfo("扫描信息：" + scanInfo);
-        }
+    scanCodeMore(times) {
+        times--;
+        return this.scanCode().then((str) => {
+            this.printStatuInfo("第【" + times + "】次扫码结果:" + str)
+            if (times > 0) {
+                return this.scanCodeMore(times);
+            }
+        });
+
     }
 };
 window.onload = () => {
@@ -116,7 +120,7 @@ window.onload = () => {
         var initObj = JSON.parse(txtInitCfg.value);
         wxUtils.groupId = initObj.groupId;
         wxUtils.secretId = initObj.secretId;
-        wxUtils.porxyUrl=initObj.porxyUrl;
+        wxUtils.porxyUrl = initObj.porxyUrl;
 
         wxUtils.printStatuInfo("1.正在获取accessToken");
         wxUtils.getAccessToken().then((access_token) => {
@@ -133,7 +137,7 @@ window.onload = () => {
             wx.config({
                 beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
                 debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-                appId: 'wx185ddae040ea5690', // 必填，企业微信的corpID
+                appId: wxUtils.groupId, // 必填，企业微信的corpID
                 timestamp: timestamp.substr(0, 10), // 必填，生成签名的时间戳
                 nonceStr: timestamp, // 必填，生成签名的随机串
                 signature: sig,// 必填，签名，见附录1
@@ -143,11 +147,13 @@ window.onload = () => {
     };
 
     btnScaMore.onclick = () => {
-        let scanTime = iptScanTimes.value || 1;
+        let scanTime = iptScanTimes.value || "1";
         lblCostTime.innerText = "正在计算【" + scanTime + "】次扫码花费时间";
         let timeStar = new Date().getTime();
-        wxUtils.scanCodeMore(scanTime);
-        lblCostTime.innerText = "扫码【" + scanTime + "】次总共花费:【" + (new Date().getTime() - timeStar) + "】ms";
+        scanTime=new Number(scanTime);
+        wxUtils.scanCodeMore(scanTime).then((str) => {
+            lblCostTime.innerText = "扫码【" + scanTime + "】次总共花费:【" + (new Date().getTime() - timeStar) + "】ms";
+        });
     };
 
     btnScanCode.onclick = () => {
