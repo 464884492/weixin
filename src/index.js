@@ -63,9 +63,9 @@ let wxUtils = {
     },
     getSignature(timestamp, ticket) {
         let url = window.location.href.replace(window.location.hash, "");
-        let jsapi_ticket = "jsapi_ticket="+ticket + "&noncestr" + timestamp + "&timestamp" + timestamp + "&url" + url;
+        let jsapi_ticket = "jsapi_ticket=" + ticket + "&noncestr" + timestamp + "&timestamp" + timestamp + "&url" + url;
+        this.printStatuInfo("签名原始信息:" + jsapi_ticket);
         let sha1Str = sha1(jsapi_ticket);
-        console.log(sha1Str);
         return sha1Str;
     },
     printStatuInfo(str) {
@@ -77,12 +77,12 @@ window.onload = () => {
     let timestamp = null;
     let txtInfo = document.querySelector("#txtInfo");
     let btnScanCode = document.querySelector("#btnScan");
-    let btnInitJSDK=document.querySelector("#btnInitJSDK");
-    btnInitJSDK.onclick=()=>{
-        wxUtils.groupId=document.querySelector("#groupId").value;
-        wxUtils.secretId=document.querySelector("#secretId").value;
-        wxUtils.porxyUrl=document.querySelector("#porxyUrl").value;
-        
+    let btnInitJSDK = document.querySelector("#btnInitJSDK");
+    btnInitJSDK.onclick = () => {
+        wxUtils.groupId = document.querySelector("#groupId").value;
+        wxUtils.secretId = document.querySelector("#secretId").value;
+        wxUtils.porxyUrl = document.querySelector("#porxyUrl").value;
+
         wxUtils.printStatuInfo("1.正在获取accessToken");
         wxUtils.getAccessToken().then((access_token) => {
             wxUtils.printStatuInfo("-------获取到accessToke:" + access_token);
@@ -123,7 +123,7 @@ window.onload = () => {
             }
         });
     };
-   
+
     wx.ready(function () {
         // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
         wxUtils.printStatuInfo("-------js-sdk初始完成")
