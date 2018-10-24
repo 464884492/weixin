@@ -62,7 +62,7 @@ let wxUtils = {
         });
     },
     getSignature(timestamp, ticket) {
-        let url = window.location.href.split("#")[0]+'='
+        let url = window.location.href.split("#")[0];
         let jsapi_ticket = "jsapi_ticket=" + ticket + "&noncestr=" + timestamp + "&timestamp=" + (timestamp + "").substr(0, 10) + "&url=" + url;
         this.printStatuInfo("签名原始信息:" + jsapi_ticket);
         let sha1Str = new jsSHA(decodeURIComponent(jsapi_ticket),"TEXT");
