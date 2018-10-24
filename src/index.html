@@ -12,16 +12,16 @@
 </head>
 
 <body>
-    <form>
-        <label>企业ID</label><input id="groupId" type="text" placeholder="企业ID" /><br />
-        <label>秘钥</label><input id="secretId" type="text" placeholder="秘钥" /><br />
-        <label>代理地址</label><input id="porxyUrl" type="text" placeholder="代理地址" /><br />
-    </form>
-    <br />
+    <div>
+        <label>初始配置信息</label><textarea id="txtInitCfg" style="width:100%;height:50px" placeholder="初始配置信息:{groupId:'',secretId:''}"></textarea><br />
+    </div>
     <div>
         <input type="button" value="初始jsdk" id="btnInitJSDK">
-        <input type="button" value="扫描二维吗" id="btnScan"></div>
-    <br />
+        <input type="button" value="一次扫码" id="btnScan">
+        <input type="text" id="iptScanTimes" placeholder="连续扫码次数" style="display:inline-block;width:80px;" />
+        <input type="button" value="多次扫码" id="btnScaMore"></div>
+        <p>耗时:<label  id="pCostTime"></label></p>
+    </div>
     <div><textarea name="" id="txtInfo" style="width:100%;height:200px"></textarea></div>
 </body>
 
