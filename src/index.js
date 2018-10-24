@@ -89,12 +89,12 @@ window.onload = () => {
             wxUtils.printStatuInfo("2.正在获取ticket");
             return wxUtils.getTicket();
         }).then((ticket) => {
+            timestamp = new Date().getTime();
             wxUtils.printStatuInfo("-------获取到ticket:" + ticket);
             wxUtils.printStatuInfo("3.正在生Signature")
             let sig = wxUtils.getSignature(timestamp, ticket);
             wxUtils.printStatuInfo("-------获取到Signature:" + sig);
             wxUtils.printStatuInfo("4.正在初始js-sdk配置")
-            timestamp = new Date().getTime();
             wx.config({
                 beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
                 debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
