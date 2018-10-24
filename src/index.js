@@ -1,7 +1,7 @@
 let wxUtils = {
     groupId: null,
     secretId: null,
-
+    porxyUrl: null,
     getAccessToken() {
         // 判断是否缓存有
         return new Promise((resolve, reject) => {
@@ -13,19 +13,25 @@ let wxUtils = {
             }
             let accessTokenUrl = 'https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=' + this.groupId + "&corpsecret=" + this.secretId;
 
-            fetch(accessTokenUrl, { method: "GET" })
-                .then(resp => {
-                    return resp.json()
-                }).then(data => {
-                    if (data.errcode == 0) {
-                        //保存本次获取的accessToken
-                        localStorage.setItem("accessToken", data.access_token);
-                        localStorage.setItem("expires_accessToken", new Date().getTime() + data.expires_in * 1000);
-                        resolve(data.access_token);
-                    }
-                }).catch(data => {
-                    reject();
+            //  fetch(accessTokenUrl, { method: "GET" })
+            fetch(this.porxyUrl, {
+                method: "POST",
+                body: JSON.stringify({
+                    method: "GET",
+                    url: accessTokenUrl
                 })
+            }).then(resp => {
+                return resp.json()
+            }).then(data => {
+                if (data.errcode == 0) {
+                    //保存本次获取的accessToken
+                    localStorage.setItem("accessToken", data.access_token);
+                    localStorage.setItem("expires_accessToken", new Date().getTime() + data.expires_in * 1000);
+                    resolve(data.access_token);
+                }
+            }).catch(data => {
+                reject();
+            })
         });
     },
     getTicket() {
@@ -39,7 +45,14 @@ let wxUtils = {
             //  应用需要绑定安全域名，绑定后可以直接用js获取ticket
             let ticketUrl = "https://qyapi.weixin.qq.com/cgi-bin/get_jsapi_ticket?access_token=" + localStorage.getItem("accessToken");
 
-            fetch(ticketUrl, { method: "GET" }).then(resp => {
+            //fetch(ticketUrl, { method: "GET" })
+            fetch(this.porxyUrl, {
+                method: "POST",
+                body: JSON.stringify({
+                    method: "GET",
+                    url: ticketUrl
+                })
+            }).then(resp => {
                 return resp.json()
             }).then(data => {
                 if (data.errcode == 0) {
@@ -83,10 +96,10 @@ let wxUtils = {
 
         });
     },
-    async scanCodeMore(times){
-        for(let i=0;i<times;i++){
-            let scanInfo=await this.scanCode();
-            this.printStatuInfo("扫描信息："+scanInfo);
+    async scanCodeMore(times) {
+        for (let i = 0; i < times; i++) {
+            let scanInfo = await this.scanCode();
+            this.printStatuInfo("扫描信息：" + scanInfo);
         }
     }
 };
@@ -103,6 +116,7 @@ window.onload = () => {
         var initObj = JSON.parse(txtInitCfg.value);
         wxUtils.groupId = initObj.groupId;
         wxUtils.secretId = initObj.secretId;
+        wxUtils.porxyUrl=initObj.porxyUrl;
 
         wxUtils.printStatuInfo("1.正在获取accessToken");
         wxUtils.getAccessToken().then((access_token) => {
@@ -133,7 +147,7 @@ window.onload = () => {
         lblCostTime.innerText = "正在计算【" + scanTime + "】次扫码花费时间";
         let timeStar = new Date().getTime();
         wxUtils.scanCodeMore(scanTime);
-        lblCostTime.innerText = "扫码【"+scanTime+"】次总共花费:【" +(new Date().getTime() - timeStar )+ "】ms";
+        lblCostTime.innerText = "扫码【" + scanTime + "】次总共花费:【" + (new Date().getTime() - timeStar) + "】ms";
     };
 
     btnScanCode.onclick = () => {
