@@ -62,11 +62,12 @@ let wxUtils = {
         });
     },
     getSignature(timestamp, ticket) {
-        let url = window.location.href.replace(window.location.hash, "");
-        let jsapi_ticket = "jsapi_ticket=" + ticket + "&noncestr=" + timestamp + "&timestamp=" + (timestamp+"").substr(0,10) + "&url=" + url;
+        let url = window.location.href.split("#")[0]
+        url = decodeURIComponent(url);
+        let jsapi_ticket = "jsapi_ticket=" + ticket + "&noncestr=" + timestamp + "&timestamp=" + (timestamp + "").substr(0, 10) + "&url=" + url;
         this.printStatuInfo("签名原始信息:" + jsapi_ticket);
-        let sha1Str = sha1(jsapi_ticket);
-        return sha1Str;
+        let sha1Str = new jsSHA(jsapi_ticket,"TEXT");
+        return sha1Str.getHash("SHA-1", "HEX");
     },
     printStatuInfo(str) {
         let txtInfo = document.querySelector("#txtInfo");
