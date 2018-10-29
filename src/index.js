@@ -99,9 +99,13 @@ let wxUtils = {
     scanCodeMore(times) {
         times--;
         return this.scanCode().then((str) => {
-            this.printStatuInfo("第【" + times + "】次扫码结果:" + str)
+            this.printStatuInfo("第【" + times + "】次扫码d结果:" + str);
             if (times > 0) {
                 return this.scanCodeMore(times);
+            } else {
+                return new Promise((resolve, reject) => {
+                    resolve("done");
+                })
             }
         });
 
@@ -150,7 +154,7 @@ window.onload = () => {
         let scanTime = iptScanTimes.value || "1";
         lblCostTime.innerText = "正在计算【" + scanTime + "】次扫码花费时间";
         let timeStar = new Date().getTime();
-        scanTime=new Number(scanTime);
+        scanTime = new Number(scanTime);
         wxUtils.scanCodeMore(scanTime).then((str) => {
             lblCostTime.innerText = "扫码【" + scanTime + "】次总共花费:【" + (new Date().getTime() - timeStar) + "】ms";
         });
