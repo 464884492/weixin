@@ -66,6 +66,22 @@ let wxUtils = {
             })
         });
     },
+    getUserInfo(code) {
+        let acessToken = localStorage.getItem("accessToken")
+        let userInfoUrl = "https://qyapi.weixin.qq.com/cgi-bin/user/getuserinfo?access_token=" + acessToken + "&code=" + code
+        //fetch(userInfoUrl, { method: "GET" })
+        fetch(wxUtils.porxyUrl, {
+            method: "POST",
+            body: JSON.stringify({
+                method: "GET",
+                url: userInfoUrl
+            })
+        }).then(resp => {
+            return resp.json()
+        }).then(data => {
+            wxUtils.printStatuInfo("用户信息：" + JSON.stringify(data));
+        });
+    },
     getSignature(timestamp, ticket) {
         let url = window.location.href.split("#")[0];
         let jsapi_ticket = "jsapi_ticket=" + ticket + "&noncestr=" + timestamp + "&timestamp=" + timestamp.substr(0, 10) + "&url=" + url;
@@ -112,14 +128,22 @@ let wxUtils = {
     }
 };
 window.onload = () => {
+    var code = '';
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] == 'code') { code = pair[1]; }
+    }
     let timestamp = null;
     let btnScanCode = document.querySelector("#btnScan");
     let iptScanTimes = document.querySelector("#iptScanTimes");
     let lblCostTime = document.querySelector("#pCostTime");
     let btnScaMore = document.querySelector("#btnScaMore");
     let txtInitCfg = document.querySelector("#txtInitCfg");
-
+    let btnGetUserInfo = document.querySelector("#btnGetUserInfo");
     let btnInitJSDK = document.querySelector("#btnInitJSDK");
+
     btnInitJSDK.onclick = () => {
         var initObj = JSON.parse(txtInitCfg.value);
         wxUtils.groupId = initObj.groupId;
@@ -145,7 +169,7 @@ window.onload = () => {
                 timestamp: timestamp.substr(0, 10), // 必填，生成签名的时间戳
                 nonceStr: timestamp, // 必填，生成签名的随机串
                 signature: sig,// 必填，签名，见附录1
-                jsApiList: ["scanQRCode"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                jsApiList: ["scanQRCode", "openUserProfile", "getCurExternalContact"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
             });
         });
     };
@@ -180,6 +204,14 @@ window.onload = () => {
             }
         });
     };
+
+    btnGetUserInfo.onclick = () => {
+        if (!code) {
+            wxUtils.printStatuInfo("未获取到code信息");
+            return
+        }
+        wxUtils.getUserInfo(code)
+    }
 
     wx.ready(function () {
         // config信息验证后会执行ready方法，所有接口调用都必须在config接口获得结果之后，config是一个客户端的异步操作，所以如果需要在页面加载时就调用相关接口，则须把相关接口放在ready函数中调用来确保正确执行。对于用户触发时才调用的接口，则可以直接调用，不需要放在ready函数中。
