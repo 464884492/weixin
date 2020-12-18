@@ -143,6 +143,7 @@ window.onload = () => {
     let txtInitCfg = document.querySelector("#txtInitCfg");
     let btnGetUserInfo = document.querySelector("#btnGetUserInfo");
     let btnInitJSDK = document.querySelector("#btnInitJSDK");
+    let btnOPenBrowser = document.querySelector("#btnOPenBrowser");
 
     btnInitJSDK.onclick = () => {
         var initObj = JSON.parse(txtInitCfg.value);
@@ -169,7 +170,7 @@ window.onload = () => {
                 timestamp: timestamp.substr(0, 10), // 必填，生成签名的时间戳
                 nonceStr: timestamp, // 必填，生成签名的随机串
                 signature: sig,// 必填，签名，见附录1
-                jsApiList: ["scanQRCode", "openUserProfile", "getCurExternalContact"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+                jsApiList: ["scanQRCode", "openUserProfile", "openDefaultBrowser"] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
             });
         });
     };
@@ -211,6 +212,15 @@ window.onload = () => {
             return
         }
         wxUtils.getUserInfo(code)
+    }
+
+    btnOPenBrowser.onclick = () => {
+        wx.invoke('openDefaultBrowser', {
+            'url': "https://www.baidu.com",
+        }, function (res) {
+            wxUtils.printStatuInfo("打开默认浏览器结果:")
+            wxUtils.printStatuInfo(JSON.stringify(res))
+        });
     }
 
     wx.ready(function () {
